@@ -1,9 +1,4 @@
-#!/bin/bash
-# Script that listens on port 98 on localhost and displays received data
+#!/usr/bin/env bash
+# Script listen on port 98 on localhost
 
-# Use netcat (nc) to listen on localhost port 98
-# -l: listen mode
-# -p: specify port (some versions use this flag)
-# 127.0.0.1: bind to localhost only
-# 98: port number
-nc -l 127.0.0.1 98
+nc -l localhost 98

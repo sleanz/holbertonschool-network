@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-# Script that configures an Ubuntu server with custom IP resolutions
-# localhost resolves to 127.0.0.2
-# facebook.com resolves to 8.8.8.8
+# Script that displays all active IPv4 IPs on the machine
 
-# Backup the original /etc/hosts file
-cp /etc/hosts /etc/hosts.backup
-
-# Remove any existing entries for localhost and facebook.com
-sed -i '/localhost/d' /etc/hosts
-sed -i '/facebook.com/d' /etc/hosts
-
-# Add the new entries
-echo "127.0.0.2    localhost" >> /etc/hosts
-echo "8.8.8.8      facebook.com" >> /etc/hosts
+# Using 'ip' command (modern approach)
+if command -v ip >/dev/null 2>&1; then
+    ip -4 addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | cut -d' ' -f2 | sort
+# Using 'ifconfig' as fallback (older systems)
+elif command -v ifconfig >/dev/null 2>&1; then
+    ifconfig | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | cut -d' ' -f2 | sort
+# Using hostname as a last resort
+elif command -v hostname >/dev/null 2>&1; then
+    hostname -I | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
+ | sort
+else
+    echo "Error: No suitable tools found to retrieve IP addresses." >&2
+    exit 1
+fi
